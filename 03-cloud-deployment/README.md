@@ -1,62 +1,67 @@
-# Section 3 — Cloud Deployment Options
+# Section 3 - Cloud Deployment Options
 
-## 3 Tier: Chọn Platform Theo Nhu Cầu
+## Render First
 
-| Tier | Platform | Khi nào dùng | Thời gian deploy |
-|------|----------|-------------|-----------------|
-| 1 | Railway, Render | MVP, demo, học | < 10 phút |
-| 2 | AWS ECS, Cloud Run | Production | 15–30 phút |
-| 3 | Kubernetes | Enterprise, large-scale | Vài giờ setup |
-
----
-
-## railway/ — Deploy < 5 Phút
-
-Không cần server config. Kết nối GitHub → Auto deploy.
-
-```
-railway/
-├── railway.toml        # Railway config
-├── Procfile            # Define start command
-├── app.py              # Agent (Railway-ready)
-└── requirements.txt
-```
-
-### Các bước deploy Railway:
-1. `railway login` (hoặc qua browser)
-2. `railway init`
-3. `railway up`
-4. Nhận URL dạng `https://your-app.up.railway.app`
-
----
-
-## render/ — render.yaml (Infrastructure as Code)
-
-Định nghĩa toàn bộ infrastructure trong 1 YAML file.
+Render is the preferred platform for this lab. The `render/` folder contains a self-contained FastAPI app plus a Render Blueprint.
 
 ```
 render/
-├── render.yaml         # Khai báo service, env vars, disk
-└── app.py
+├── app.py
+├── requirements.txt
+└── render.yaml
 ```
 
----
+### Deploy Render
 
-## production-cloud-run/ — GCP Cloud Run + CI/CD
+1. Push this repository to GitHub.
+2. Render Dashboard -> New -> Blueprint.
+3. Connect the repository.
+4. Use `03-cloud-deployment/render/render.yaml` as the blueprint.
+5. Render builds from `rootDir: 03-cloud-deployment/render`.
+6. Test the public URL:
 
-Production-grade. Tự động build và deploy khi push code.
+```bash
+curl https://<your-render-url>/health
+curl https://<your-render-url>/ask \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"question":"What is Render?"}'
+```
+
+## Railway Reference
+
+Railway is kept as a reference/prototype option.
+
+```
+railway/
+├── railway.toml
+├── app.py
+├── requirements.txt
+└── utils/mock_llm.py
+```
+
+Basic flow:
+
+```bash
+cd railway
+railway login
+railway init
+railway up
+railway domain
+```
+
+## Cloud Run Reference
+
+`production-cloud-run/` contains GCP Cloud Run configuration for a more production-oriented CI/CD path.
 
 ```
 production-cloud-run/
-├── cloudbuild.yaml     # CI/CD pipeline
-├── service.yaml        # Cloud Run service definition
-└── README.md           # Hướng dẫn chi tiết
+├── cloudbuild.yaml
+└── service.yaml
 ```
 
----
+## Discussion
 
-## Câu hỏi thảo luận
-
-1. Tại sao serverless (Lambda) không phải lúc nào cũng tốt cho AI agent?
-2. "Cold start" là gì? Ảnh hưởng thế nào đến UX?
-3. Khi nào nên upgrade từ Railway lên Cloud Run?
+1. Why is Render Blueprint easier to review than manual dashboard setup?
+2. What is cold start and how can it affect an AI agent?
+3. When would you move from Render to Cloud Run?

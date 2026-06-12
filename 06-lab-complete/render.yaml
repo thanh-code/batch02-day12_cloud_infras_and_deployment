@@ -3,21 +3,50 @@ services:
     name: ai-agent-production
     runtime: docker
     region: singapore
-    plan: starter
+    plan: free
     healthCheckPath: /health
-    autoDeploy: true
+    maxShutdownDelaySeconds: 30
+    autoDeployTrigger: commit
     envVars:
       - key: ENVIRONMENT
         value: production
       - key: APP_VERSION
         value: "1.0.0"
+      - key: LOG_LEVEL
+        value: INFO
       - key: OPENAI_API_KEY
         sync: false
       - key: AGENT_API_KEY
         generateValue: true
       - key: JWT_SECRET
         generateValue: true
-      - key: DAILY_BUDGET_USD
-        value: "5.0"
       - key: RATE_LIMIT_PER_MINUTE
+        value: "10"
+      - key: RATE_LIMIT_WINDOW_SECONDS
+        value: "60"
+      - key: MONTHLY_BUDGET_USD
+        value: "10.0"
+      - key: ESTIMATED_OUTPUT_TOKENS
+        value: "300"
+      - key: HISTORY_TTL_SECONDS
+        value: "2592000"
+      - key: MAX_HISTORY_MESSAGES
         value: "20"
+      - key: REDIS_HOST
+        fromService:
+          type: keyvalue
+          name: ai-agent-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: keyvalue
+          name: ai-agent-redis
+          property: port
+
+  - type: keyvalue
+    name: ai-agent-redis
+    region: singapore
+    plan: free
+    ipAllowList: []
+    maxmemoryPolicy: allkeys-lru
+    persistenceMode: journal-snapshot

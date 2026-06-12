@@ -54,19 +54,19 @@ production/
 ### Chạy thử
 ```bash
 # From project root
-cd ../..  # if not already there
+cd 02-docker/production
 
 # Khởi động toàn bộ stack (1 lệnh!)
-docker compose -f 02-docker/production/docker-compose.yml up
+docker compose up --build
 
 # Xem các service đang chạy
-docker compose -f 02-docker/production/docker-compose.yml ps
+docker compose ps
 
 # Test agent qua Nginx
 curl http://localhost/health
 
 # Dừng toàn bộ
-docker compose -f 02-docker/production/docker-compose.yml down
+docker compose down
 ```
 
 ### So sánh image size:
@@ -75,7 +75,7 @@ docker compose -f 02-docker/production/docker-compose.yml down
 # Basic vs Advanced
 docker images | grep agent
 # agent-basic    ~  800 MB  ← python:3.11 base
-# agent-advanced ~  160 MB  ← python:3.11-slim + multi-stage
+# agent-advanced ~  70-160 MB  ← python:3.11-slim + multi-stage
 ```
 
 ---
